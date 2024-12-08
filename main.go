@@ -16,25 +16,38 @@ func main() {
 	}
 
 	data := string(file)
-	regex := regexp.MustCompile("mul\\((\\d+),(\\d+)\\)")
+	regex := regexp.MustCompile("do\\(\\)|don't\\(\\)|mul\\((\\d+),(\\d+)\\)")
 	matches := regex.FindAllStringSubmatch(data, -1)
 
 	result := 0
 
+	enabled := true
+
 	for _, match := range matches {
-		var num1, num2 int
-		num1, err = strconv.Atoi(match[1])
-		if err != nil {
-			log.Fatal(err)
-		}
+		switch match[0] {
 
-		num2, err = strconv.Atoi(match[2])
-		if err != nil {
-			log.Fatal(err)
-		}
+		case "do()":
+			enabled = true
 
-		result += num1*num2
+		case "don't()":
+			enabled = false
+
+		default:
+			if enabled {
+				var num1, num2 int
+				num1, err = strconv.Atoi(match[1])
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				num2, err = strconv.Atoi(match[2])
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				result += num1 * num2
+			}
+		}
 	}
-
 	fmt.Println(result)
 }
